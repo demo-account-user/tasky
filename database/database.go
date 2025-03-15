@@ -17,7 +17,17 @@ var Client *mongo.Client = CreateMongoClient()
 func CreateMongoClient() *mongo.Client {
 	godotenv.Overload()
 	MongoDbURI := os.Getenv("MONGODB_URI")
-	client, err := mongo.NewClient(options.Client().ApplyURI(MongoDbURI))
+	uname := os.Getenv("MONGODB_USERNAME")
+	passwd := os.Getenv("MONGODB_PASSWORD")
+
+	credential := options.Credential{
+		AuthMechanism: "SCRAM-SHA-256",
+		AuthSource: "admin",
+		Username: uname,
+		Password: passwd,
+	}
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(MongoDbURI).SetAuth(credential))
 	if err != nil {
 		log.Fatal(err)
 	}
